@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:cardCornerRadius="0dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:padding="8dp">
+
+
+        <AutoCompleteTextView
+            android:id="@+id/AL_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:padding="8dp"
+
+            android:hint="Enter Email" />
+
+        <EditText
+            android:id="@+id/AL_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/AL_email"
+            android:layout_marginTop="25dp"
+            android:ems="10"
+            android:hint="Enter Password"
+            android:inputType="textPassword"
+            android:padding="8dp" />
+
+        <Button
+            android:id="@+id/AL_btnSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/AL_password"
+            android:layout_marginTop="25dp"
+            android:background="@color/green"
+            android:text="Sign in"
+            android:textColor="@color/White" />
+
+        <Button
+            android:id="@+id/AL_btnForgot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/AL_btnSignIn"
+            android:layout_marginTop="25dp"
+            android:background="@color/White"
+            android:text="Forgot password" />
+
+        <TextView
+            android:id="@+id/AL_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/AL_btnForgot"
+            android:layout_marginTop="25dp"
+            android:text="Create account, if you're new user"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/blue_dark2" />
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

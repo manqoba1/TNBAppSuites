@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/ALI_logo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_pothole" />
+
+    <TextView
+        android:id="@+id/ALI_issueName"
+        style="@style/Title4TextStyleGray"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ALI_logo"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@+id/ALI_logo"
+        android:gravity="right"
+        android:text="Water pipe" />
+
+    <TextView
+        android:id="@+id/textView2"
+        style="@style/Title3TextStyleGray"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ALI_issueName"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toEndOf="@+id/ALI_logo"
+        android:text="GPS Location" />
+
+    <TextView
+        android:id="@+id/ALI_coordinates"
+        style="@style/Title3TextStyleGray"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/textView2"
+        android:layout_below="@+id/textView2"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center_horizontal"
+        android:text="Finding Location" />
+
+</RelativeLayout>

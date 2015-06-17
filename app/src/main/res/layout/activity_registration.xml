@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:background="@color/white"
+    tools:context="codetribe.com.minsassapps.Registration">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:cardCornerRadius="0dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:padding="8dp">
+
+
+                <EditText
+                    android:id="@+id/AR_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="10dp"
+                    android:ems="20"
+                    android:hint="Enter name"
+                    android:inputType="textPassword"
+                    android:padding="8dp" />
+
+                <EditText
+                    android:id="@+id/AR_cell"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/AR_name"
+                    android:inputType="phone"
+                    android:layout_marginTop="10dp"
+                    android:hint="Enter cell" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/AR_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/AR_cell"
+                    android:inputType="textEmailAddress"
+                    android:layout_marginTop="10dp"
+                    android:hint="Enter email" />
+
+                <EditText
+                    android:id="@+id/AR_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/AR_email"
+                    android:inputType="textPassword"
+                    android:layout_marginTop="10dp"
+                    android:hint="Enter Password" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/AR_municipality"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/AR_password"
+                    android:layout_marginTop="10dp"
+                    android:hint="Enter municipality prefix e.g:(Tsh)" />
+
+                <Button
+                    android:id="@+id/AR_btnSignUp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/AR_municipality"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/green"
+                    android:text="Sign up"
+                    android:textColor="@color/White" />
+
+                <Button
+                    android:id="@+id/AR_btnSignIn"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/AR_btnSignUp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/White"
+                    android:text="Sign in" />
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </RelativeLayout>
+</ScrollView>

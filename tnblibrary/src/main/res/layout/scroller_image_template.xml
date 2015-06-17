@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="8dp"
+    android:background="@color/AliceBlue"
+    android:id="@+id/main"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_pothole"
+        android:layout_width="200dp"
+        android:layout_height="200dp" />
+
+    <TextView
+        android:id="@+id/number"
+        android:text="00"
+        android:textColor="@color/DeepPink"
+        android:layout_margin="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+</RelativeLayout>

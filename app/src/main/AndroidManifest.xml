@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.sifiso.tnbappsuites">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/notice_logo"
+        android:label="@string/app_name"
+        android:theme="@style/CustomAppTheme">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyBGOZtq3kHsw0XOenGYEhmCWLrsEjU6Fsc" />
+
+        <activity
+            android:name=".MainPagerActivity"
+            android:label="@string/app_name"></activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".RegistrationActivity"
+            android:label="@string/title_activity_registration"></activity>
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:label="@string/title_activity_forgot_password"></activity>
+        <activity
+            android:name=".LogIssueActivity"
+            android:label="@string/title_activity_log_issue">
+
+        </activity>
+
+    </application>
+
+</manifest>

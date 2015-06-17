@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <LinearLayout
+            android:id="@+id/CAM_imageContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <include layout="@layout/scroller_image_template" />
+
+            <include layout="@layout/scroller_image_template" />
+
+            <include layout="@layout/scroller_image_template" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <ImageView
+        android:id="@+id/ALI_camera"
+        style="@style/PurpleCircleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="15dp"
+        android:src="@android:drawable/ic_menu_camera"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />" />
+</RelativeLayout>
