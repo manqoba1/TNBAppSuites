@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/java/com/example/sifiso/tnblibrary/fragment/DashboardFragment.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/java/com/example/sifiso/tnblibrary/fragment/PageFragment.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/java/com/example/sifiso/tnblibrary/util/ImageUtil.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/java/com/example/sifiso/tnblibrary/viewsUtil/CircleTransform.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/java/com/example/sifiso/tnblibrary/viewsUtil/DividerItemDecoration.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/java/com/example/sifiso/tnblibrary/viewsUtil/ZoomOutPageTransformer.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/java/com/example/sifiso/tnblibrary/viewsUtil/ZoomOutPageTransformerImpl.java" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/res/anim" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/res/animator" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/res/drawable-mdpi/under_construction.jpg" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/res/drawable/notice_logo.png" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/res/interpolator" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/res/layout/scroller_image_template.xml" charset="windows-1252" />
-    <file url="file://$PROJECT_DIR$/tnblibrary/src/main/res/layout/xsimple_spinner_item.xml" charset="windows-1252" />
+  <component name="Encoding">
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

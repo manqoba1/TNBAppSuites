@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import com.example.sifiso.tnblibrary.fragment.DashboardFragment;
 import com.example.sifiso.tnblibrary.fragment.IssuesLoggedFragment;
 import com.example.sifiso.tnblibrary.fragment.PageFragment;
+import com.example.sifiso.tnblibrary.models.ClerkDTO;
 import com.example.sifiso.tnblibrary.models.CommunitymemberDTO;
 import com.example.sifiso.tnblibrary.models.IssuesDTO;
 import com.example.sifiso.tnblibrary.models.ReportedissueDTO;
@@ -32,6 +33,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +58,7 @@ public class MainPagerActivity extends ActionBarActivity implements DashboardFra
         Log.d(LOG, "activity started");
         communityMember = SharedUtil.getCommunityMember(ctx);
         Util.setCustomActionBar(ctx, getSupportActionBar(),
-                "Report Issue", ctx.getResources().getDrawable(R.mipmap.ic_launcher));
+                "", ctx.getResources().getDrawable(R.mipmap.ic_launcher));
         setField();
     }
 
@@ -94,7 +96,7 @@ public class MainPagerActivity extends ActionBarActivity implements DashboardFra
     CommunitymemberDTO communityMember;
 
     private void loadDashboardData() {
-        DataUtil.loadUserData(ctx, 1, new DataUtil.DataUtilInterface() {
+        DataUtil.loadUserData(ctx, communityMember.getCommunityMemberID(), new DataUtil.DataUtilInterface() {
             @Override
             public void onResponse(JSONObject r) {
                 DataUtil.getUserData(ctx, r, new DataUtil.JsonifyListener() {
@@ -107,6 +109,7 @@ public class MainPagerActivity extends ActionBarActivity implements DashboardFra
                     @Override
                     public void onError(String error) {
                         Util.showErrorToast(ctx, error);
+                        loggedFragment.refreshListStop();
                     }
                 });
             }
@@ -114,9 +117,12 @@ public class MainPagerActivity extends ActionBarActivity implements DashboardFra
             @Override
             public void onError(String error) {
                 Util.showErrorToast(ctx, error);
+                loggedFragment.refreshListStop();
             }
         });
     }
+
+    boolean isRefresh;
 
     private void cacheDataLocal(ResponseDTO resp) {
         CachedUtil.cacheData(ctx, resp, CachedUtil.CACHE_DASH_BOARD_DATA, new CachedUtil.CacheUtilListener() {
@@ -128,13 +134,23 @@ public class MainPagerActivity extends ActionBarActivity implements DashboardFra
             @Override
             public void onDataCached(ResponseDTO resp) {
                 response = resp;
-                Log.e(LOG, new Gson().toJson(resp));
-                //  buildPages();
+                Log.e(LOG, "isRefresh " + new Gson().toJson(resp));
+                if (isRefresh) {
+
+                    mPager.setCurrentItem(1);
+
+                    loggedFragment.refreshListStop();
+                    loggedFragment.setResponse(response);
+
+                    isRefresh = false;
+                    return;
+                }
+                buildPages();
             }
 
             @Override
             public void onError() {
-
+                loggedFragment.refreshListStop();
             }
         });
     }
@@ -211,7 +227,14 @@ public class MainPagerActivity extends ActionBarActivity implements DashboardFra
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             SharedUtil.logoutCommunityMember(ctx);
+            Intent intent = new Intent(MainPagerActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
             return true;
+        }else if(id == R.id.action_map){
+            Intent intent = new Intent(MainPagerActivity.this, TNBMapsActivity.class);
+            intent.putExtra("issueLogged", (Serializable) response.getReportedIssueList());
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -225,8 +248,17 @@ public class MainPagerActivity extends ActionBarActivity implements DashboardFra
     }
 
     @Override
-    public void onIssueLoggedFullView(ReportedissueDTO reportedissue) {
+    public void onIssueLoggedFullView(ReportedissueDTO reportedIssue) {
+        Intent i = new Intent(MainPagerActivity.this, FullViewIssueActivity.class);
+        i.putExtra("reportedIssue", reportedIssue);
+        startActivity(i);
+        Log.d(LOG, new Gson().toJson(reportedIssue));
+    }
 
+    @Override
+    public void onPullRefresh() {
+        isRefresh = true;
+        loadDashboardData();
     }
 
     private class PagerAdapter extends FragmentStatePagerAdapter implements PageFragment {
@@ -270,4 +302,16 @@ public class MainPagerActivity extends ActionBarActivity implements DashboardFra
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        //  TimerUtil.killFlashTimer();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        super.onPause();
+    }
 }

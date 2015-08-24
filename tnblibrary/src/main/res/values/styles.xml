@@ -9,7 +9,11 @@
         <item name="android:fontFamily">sans-serif-light</item>
 
     </style>
-
+    <style name="TextStyleGreen" >
+        <item name="android:textColor">@color/green</item>
+        <item name="android:textStyle">normal|bold</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
     <style name="CustomAppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/experi</item>
@@ -39,6 +43,12 @@
         <item name="android:textColor">@color/gray_green</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    <style name="Title3TextStyleRed" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
     <style name="TextStyle" parent="@android:style/TextAppearance.Medium">
@@ -79,5 +89,10 @@
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">18dp</item>
+    </style>
+    <style name="Title2TextStyleBlue" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/navy_blue</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">22sp</item>
     </style>
 </resources>

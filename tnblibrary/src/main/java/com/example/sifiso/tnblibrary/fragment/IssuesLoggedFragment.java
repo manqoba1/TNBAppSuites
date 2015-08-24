@@ -3,7 +3,9 @@ package com.example.sifiso.tnblibrary.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -29,7 +31,7 @@ import java.util.zip.Inflater;
  * Use the {@link IssuesLoggedFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class IssuesLoggedFragment extends Fragment implements PageFragment {
+public class IssuesLoggedFragment extends Fragment implements PageFragment, SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView SD_list;
     private TextView HERO_caption;
@@ -38,6 +40,7 @@ public class IssuesLoggedFragment extends Fragment implements PageFragment {
     private IssuesLoggedAdapter loggedAdapter;
     View v;
     private Context ctx;
+    private SwipeRefreshLayout refreshLayout;
 
     /**
      * Use this factory method to create a new instance of
@@ -81,18 +84,19 @@ public class IssuesLoggedFragment extends Fragment implements PageFragment {
         LayoutInflater in = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View vh = in.inflate(R.layout.hero_image, null);
         HERO_caption = (TextView) vh.findViewById(R.id.HERO_caption);
-
+        refreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(this);
         //SD_list.addView(v, 0);
-        SD_list = (RecyclerView) v.findViewById(R.id.SD_list);
-        SD_list.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-
-        SD_list.setItemAnimator(new DefaultItemAnimator());
-        SD_list.addItemDecoration(new DividerItemDecoration(ctx, RecyclerView.HORIZONTAL));
 
         setList();
     }
 
     private void setList() {
+        SD_list = (RecyclerView) v.findViewById(R.id.SD_list);
+        SD_list.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+
+        SD_list.setItemAnimator(new DefaultItemAnimator());
+        SD_list.addItemDecoration(new DividerItemDecoration(ctx, RecyclerView.HORIZONTAL));
 
         loggedAdapter = new IssuesLoggedAdapter(ctx, response.getReportedIssueList(), R.layout.issue_cardview, new IssuesLoggedAdapter.IssuesLoggedAdapterListener() {
             @Override
@@ -101,7 +105,7 @@ public class IssuesLoggedFragment extends Fragment implements PageFragment {
             }
         });
         SD_list.setAdapter(loggedAdapter);
-     //   HERO_caption.setText(response.getReportedIssueList().size() + "");
+        //   HERO_caption.setText(response.getReportedIssueList().size() + "");
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -133,19 +137,37 @@ public class IssuesLoggedFragment extends Fragment implements PageFragment {
 
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface IssuesLoggedListener {
         // TODO: Update argument type and name
         public void onIssueLoggedFullView(ReportedissueDTO reportedissue);
+
+        public void onPullRefresh();
     }
 
+    @Override
+    public void onRefresh() {
+        refreshLayout.setRefreshing(true);
+        mListener.onPullRefresh();
+
+    }
+    public void setResponse(ResponseDTO resp){
+        response = resp;
+        setList();
+    }
+
+    public void refreshListStop() {
+        //do processing to get new data and set your listview's adapter, maybe  reinitialise the loaders you may be using or so
+
+        //when your data has finished loading, cset the refresh state of the view to false
+        refreshLayout.setRefreshing(false);
+       /* new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refreshLayout.setRefreshing(false);
+
+
+            }
+        }, 5000);*/
+
+    }
 }

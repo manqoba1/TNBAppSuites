@@ -1024,9 +1024,10 @@ public class Util {
         return df.format(date.toDate());
     }*/
 
+
     public static String getLongDateTime(Date date) {
         SimpleDateFormat df = new SimpleDateFormat(
-                "EEEE, dd MMMM yyyy HH:mm:ss");
+                "yyyy-MM-dd HH:mm:ss");
         return df.format(date);
     }
 

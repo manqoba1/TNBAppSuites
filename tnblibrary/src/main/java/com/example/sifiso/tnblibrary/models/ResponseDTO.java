@@ -20,6 +20,15 @@ public class ResponseDTO implements Serializable {
     private List<TownDTO> townList = new ArrayList<>();
     private List<WardsDTO> wardList = new ArrayList<>();
     private List<MunicipalityDTO> municipalityList = new ArrayList<>();
+    private List<StatusDTO> statusList = new ArrayList<>();
+
+    public List<StatusDTO> getStatusList() {
+        return statusList;
+    }
+
+    public void setStatusList(List<StatusDTO> statusList) {
+        this.statusList = statusList;
+    }
 
     public Integer getSuccess() {
         return success;

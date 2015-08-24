@@ -9,12 +9,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,17 +36,21 @@ import com.example.sifiso.tnblibrary.models.CommunitymemberDTO;
 import com.example.sifiso.tnblibrary.models.IssueimageDTO;
 import com.example.sifiso.tnblibrary.models.IssuesDTO;
 import com.example.sifiso.tnblibrary.models.ReportedissueDTO;
+import com.example.sifiso.tnblibrary.toolbox.WebCheck;
+import com.example.sifiso.tnblibrary.toolbox.WebCheckResult;
 import com.example.sifiso.tnblibrary.util.CloudinaryUtil;
 import com.example.sifiso.tnblibrary.util.DataUtil;
 import com.example.sifiso.tnblibrary.util.ImageUtil;
 import com.example.sifiso.tnblibrary.util.SharedUtil;
 import com.example.sifiso.tnblibrary.util.Util;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,15 +63,18 @@ import java.util.List;
 import java.util.Map;
 
 
-public class LogIssueActivity extends ActionBarActivity implements LocationListener {
+public class LogIssueActivity extends ActionBarActivity implements LocationListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private ImageView ALI_logo, ALI_camera;
     private EditText ALI_message;
     private Button ALI_btnSave;
-    private TextView ALI_coordinates, ALI_issueName;
+    private TextView ALI_date, ALI_latitude, ALI_longitude, ALI_issueName;
+    private ProgressBar progressBar2;
     private Context ctx;
     LinearLayout imageContainerLayout;
 
     LocationRequest mLocationRequest;
+    GoogleApiClient googleApiClient;
 
     LayoutInflater inflater;
     File photoFile, currentThumbFile;
@@ -79,20 +89,65 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_log_issue);
         Log.d(LOG, "onCreate FIRED");
         ctx = getApplicationContext();
         inflater = getLayoutInflater();
-        setContentView(R.layout.activity_log_issue);
         issues = (IssuesDTO) getIntent().getSerializableExtra("issue");
         communityMember = SharedUtil.getCommunityMember(ctx);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
         try {
-            Util.setCustomActionBar(ctx, getSupportActionBar(), "Login Screen", ctx.getResources().getDrawable(R.mipmap.ic_launcher));
+            Util.setCustomActionBar(ctx, getSupportActionBar(), "Log Issue", ctx.getResources().getDrawable(R.mipmap.ic_launcher));
         } catch (Exception e) {
             Log.d(LOG, "{0}", e);
         }
         setField();
     }
 
+    private void setField() {
+        ALI_logo = (ImageView) findViewById(R.id.ALI_logo);
+        int id = ctx.getResources().getIdentifier(issues.getIcon(), "drawable", ctx.getPackageName());
+        ALI_logo.setImageResource(id);
+        progressBar2 = (ProgressBar) findViewById(R.id.progressBar2);
+        progressBar2.setVisibility(View.GONE);
+        imageContainerLayout = (LinearLayout) findViewById(R.id.CAM_imageContainer);
+        ALI_issueName = (TextView) findViewById(R.id.ALI_issueName);
+        ALI_latitude = (TextView) findViewById(R.id.ALI_latitude);
+        ALI_longitude = (TextView) findViewById(R.id.ALI_longitude);
+        ALI_issueName.setText(issues.getName());
+        ALI_message = (EditText) findViewById(R.id.ALI_message);
+        ALI_date = (TextView) findViewById(R.id.ALI_date);
+        ALI_date.setText(Util.getLongDateTime(new Date()));
+        ALI_btnSave = (Button) findViewById(R.id.ALI_btnSave);
+        ALI_btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentSessionPhotoFile.size() == 0) {
+                    Util.showToast(ctx, "Please take at least one image");
+                    return;
+                }
+                WebCheckResult w = WebCheck.checkNetworkAvailability(ctx);
+                if (w.isWifiConnected() || w.isMobileConnected()) {
+                    logIssueToServer();
+                } else {
+                    showSettingDialog();
+                }
+            }
+        });
+        ALI_camera = (ImageView) findViewById(R.id.ALI_camera);
+        ALI_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+            }
+        });
+    }
 
     private File createImageFile() throws IOException {
         //creating image file names
@@ -147,9 +202,33 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
 
     @Override
     public void onPause() {
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_out_left, R.anim.slide_in_right);
         super.onPause();
         startScan();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.i(LOG,
+                "+++  onConnected() -  requestLocationUpdates ...");
+        location = LocationServices.FusedLocationApi.getLastLocation(
+                googleApiClient);
+        Log.w(LOG, "## requesting location updates ....");
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(3000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setFastestInterval(1000);
+        startScan();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     class PhotoTask extends AsyncTask<Void, Void, Integer> {
@@ -219,6 +298,7 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
 
             try {
                 currentSessionPhotos.add(Uri.fromFile(currentThumbFile).toString());
+                currentSessionPhotoFile.add(currentThumbFile);
                 addImageToScroller();
 
             } catch (Exception e) {
@@ -228,6 +308,8 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
 
         }
     }
+
+    private List<File> currentSessionPhotoFile = new ArrayList<>();
 
     private void addImageToScroller() {
         Log.i(LOG, "addImageToScroller");
@@ -242,6 +324,8 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
         View v = inflater.inflate(R.layout.scroller_image_template, null);
         ImageView img = (ImageView) v.findViewById(R.id.image);
         TextView num = (TextView) v.findViewById(R.id.number);
+        ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
         num.setText(" " + currentSessionPhotos.size());
         Uri uri = Uri.fromFile(currentThumbFile);
         ImageLoader.getInstance().displayImage(uri.toString(), img);
@@ -259,7 +343,10 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
         dto.setReviews(ALI_message.getText().toString());
         dto.setLatitude(location.getLatitude());
         dto.setLongitude(location.getLongitude());
-        dto.setDateReported(new Date().toString());
+        dto.setDateReported(Util.getLongDateTime(new Date()));
+        progressBar2.setVisibility(View.VISIBLE);
+        ALI_btnSave.setEnabled(false);
+        Log.d(LOG, new Gson().toJson(dto));
         DataUtil.reportIssue(ctx, dto, new DataUtil.DataUtilInterface() {
             @Override
             public void onResponse(JSONObject r) {
@@ -281,24 +368,31 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
         });
     }
 
+    int uploadCount;
+
     private void uploadPhotos() {
-        Log.w(LOG, "attempting to addTeamMemberEvaluation");
-        for (int i = 0; i < currentSessionPhotos.size(); i++) {
-            CloudinaryUtil.uploadImagesToCDN(ctx, new File(currentSessionPhotos.get(i)), new CloudinaryUtil.CloudinaryUtilListner() {
+        Log.w(LOG, "attempting to add Upload images");
+        for (int i = 0; i < currentSessionPhotoFile.size(); i++) {
+            Log.w(LOG, "Image uri: " + currentSessionPhotoFile.get(i));
+            CloudinaryUtil.uploadImagesToCDN(ctx, currentSessionPhotoFile.get(i), new CloudinaryUtil.CloudinaryUtilListner() {
                 @Override
                 public void onSuccessUpload(Map uploadResult) {
                     String imageurl = (String) uploadResult.get("url");
+                    uploadCount++;
+                    Snackbar.make(ALI_btnSave, "Image #" + uploadCount + " uploaded", Snackbar.LENGTH_LONG)
+                            .setAction("CLOSE", null)
+                            .show();
                     addImageIssue(reportedIssueID, imageurl);
                 }
 
                 @Override
                 public void onError() {
-
+                    // cache bad image uploads
                 }
 
                 @Override
                 public void onProgress(Integer upload) {
-
+                    Util.showToast(ctx, "Progress " + upload + "%");
                 }
             });
         }
@@ -308,6 +402,7 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
         IssueimageDTO dto = new IssueimageDTO();
         dto.setReportedIssueID(id);
         dto.setImageUrl(urlPath);
+        dto.setDateTaken(Util.getLongDateTime(new Date()));
         DataUtil.addIssueImages(ctx, dto, new DataUtil.DataUtilInterface() {
             @Override
             public void onResponse(JSONObject r) {
@@ -315,7 +410,15 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
                     if (r.getInt("success") == 0) {
                         Util.showErrorToast(ctx, r.getString("message"));
                     }
-                    Util.showToast(ctx, r.getString("message"));
+                    if (currentSessionPhotoFile.size() == uploadCount) {
+                        progressBar2.setVisibility(View.GONE);
+
+                        Snackbar.make(ALI_btnSave,r.getString("message"),Snackbar.LENGTH_LONG).setAction("CLOSE",null).show();
+                        Intent intent = new Intent(LogIssueActivity.this, MainPagerActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -400,37 +503,20 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
                 + bm.getRowBytes());
     }
 
-    private void setField() {
-        ALI_logo = (ImageView) findViewById(R.id.ALI_logo);
-        int id = ctx.getResources().getIdentifier(issues.getIcon(), "drawable", ctx.getPackageName());
-        ALI_logo.setImageResource(id);
-        imageContainerLayout = (LinearLayout) findViewById(R.id.CAM_imageContainer);
-        ALI_issueName = (TextView) findViewById(R.id.ALI_issueName);
-        ALI_issueName.setText(issues.getName());
-        ALI_message = (EditText) findViewById(R.id.ALI_message);
-        ALI_coordinates = (TextView) findViewById(R.id.ALI_coordinates);
-        ALI_btnSave = (Button) findViewById(R.id.ALI_btnSave);
-        ALI_btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logIssueToServer();
-            }
-        });
-        ALI_camera = (ImageView) findViewById(R.id.ALI_camera);
-        ALI_camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dispatchTakePictureIntent();
-            }
-        });
-    }
 
     @Override
     public void onResume() {
         Log.d(LOG, "onResume FIRED");
         super.onResume();
-        if (locationManager == null) {
-            startScan();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (googleApiClient != null) {
+            googleApiClient.disconnect();
+            Log.e(LOG, "### onStop - GoogleApiClient disconnecting ");
         }
     }
 
@@ -439,6 +525,16 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_login, menu);
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        Log.i(LOG,
+                "## onStart - GoogleApiClient connecting ... ");
+        if (googleApiClient != null) {
+            googleApiClient.connect();
+        }
+        super.onStart();
     }
 
     @Override
@@ -453,84 +549,57 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
             return true;
         }
 
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
     Location location;
-    LocationManager locationManager;
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 2;
-    private static final long MIN_TIME_BW_UPDATES = 1;
-    public boolean isGPSEnabled = false;
-    public boolean isNetworkEnabled = false;
-    public boolean canGetLocation = false;
+    boolean mRequestingLocationUpdates;
 
-    private Location getLocation() {
-        onLocationChanged(location);
-        return location;
-    }
 
     public void startScan() {
-        getLocation();
+        if (googleApiClient.isConnected()) {
+            mRequestingLocationUpdates = true;
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    googleApiClient, mLocationRequest, this);
+        }
+
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
-        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    public void onLocationChanged(Location loc) {
+        Log.d(LOG, "## onLocationChanged accuracy = " + loc.getAccuracy());
 
-        Log.v(LOG + " gps", "=" + isGPSEnabled);
+        if (this.location == null) {
+            this.location = loc;
+        }
+        Log.w(LOG, "### Passing " + loc.getAccuracy());
+        ALI_latitude.setText(loc.getLatitude() + "");
+        ALI_longitude.setText(loc.getLongitude() + "");
+        if (loc.getAccuracy() <= ACCURACY_THRESHOLD) {
 
-        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            location = loc;
+            ALI_latitude.setText(loc.getLatitude() + "");
+            ALI_longitude.setText(loc.getLongitude() + "");
+            stopScan();
 
-        Log.v(LOG + " network", "=" + isNetworkEnabled);
-
-        if (isGPSEnabled == false && isNetworkEnabled == false) {
-            Log.d(LOG, "is not connected");
-            showSettingDialog();
-        } else {
-            canGetLocation = true;
-            if (isNetworkEnabled) {
-                location = null;
-                locationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                Log.d(LOG, "Network");
-                if (locationManager != null) {
-                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if (location != null) {
-                        setGPSLocation(location);
-                    }
-                }
-            }
-
-            if (isGPSEnabled) {
-                location = null;
-                if (location == null) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    Log.d(LOG, "GPs");
-                    if (locationManager != null) {
-                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        if (location != null) {
-                            setGPSLocation(location);
-                        }
-                    }
-                }
-            }
-
+            //finish();
+            Log.e(LOG, "+++ best accuracy found: " + location.getAccuracy());
         }
     }
 
     public void showSettingDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(LogIssueActivity.this);
 
-        builder.setTitle("GPS settings");
-        builder.setMessage("GPS is not enabled. Do you want to go to settings menu, to search for location?");
+        builder.setTitle("No connectivity");
+        builder.setMessage("You network connectivity might be off, if not so please contact you your network provider");
         builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                 startActivity(intent);
             }
         });
@@ -543,46 +612,22 @@ public class LogIssueActivity extends ActionBarActivity implements LocationListe
         builder.show();
     }
 
-    private void setGPSLocation(Location loc) {
-
-        this.location = loc;
-
-        Log.w(LOG, "### Passing " + loc.getAccuracy());
-        ALI_coordinates.setText("Lat : " + loc.getLatitude() + " Lng : " + loc.getLongitude());
-        if (loc.getAccuracy() <= ACCURACY_THRESHOLD) {
-
-            location = loc;
-            ALI_coordinates.setText("Lat : " + loc.getLatitude() + " Lng : " + loc.getLongitude());
-            stopScan();
-
-            //finish();
-            Log.e(LOG, "+++ best accuracy found: " + location.getAccuracy());
-        }
-    }
 
     public void stopScan() {
-
-        if (locationManager != null) {
-            locationManager.removeUpdates(LogIssueActivity.this);
+        if (googleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    googleApiClient, this);
         }
-
     }
 
     static final String LOG = LogIssueActivity.class.getSimpleName();
 
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
+    protected void onDestroy() {
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        //  TimerUtil.killFlashTimer();
+        super.onDestroy();
     }
 
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
 }

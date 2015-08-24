@@ -6,42 +6,88 @@
     <ImageView
         android:id="@+id/ALI_logo"
         android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_height="108dp"
+        android:padding="2dp"
         android:src="@drawable/ic_pothole" />
-
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar2"
+        android:layout_alignParentRight="true"/>
     <TextView
         android:id="@+id/ALI_issueName"
         style="@style/Title4TextStyleGray"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/ALI_logo"
-        android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
         android:layout_toEndOf="@+id/ALI_logo"
         android:gravity="right"
+        android:paddingRight="8dp"
         android:text="Water pipe" />
 
-    <TextView
-        android:id="@+id/textView2"
-        style="@style/Title3TextStyleGray"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ALI_issueName"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_toEndOf="@+id/ALI_logo"
-        android:text="GPS Location" />
-
-    <TextView
-        android:id="@+id/ALI_coordinates"
-        style="@style/Title3TextStyleGray"
+    <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView2"
-        android:layout_below="@+id/textView2"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="15dp"
-        android:gravity="center_horizontal"
-        android:text="Finding Location" />
+        android:layout_alignStart="@+id/ALI_issueName"
+        android:layout_below="@+id/ALI_date"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <TextView
+            android:id="@+id/AL_date"
+            style="@style/Title3TextStyleGray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:text="Latitude" />
+
+        <TextView
+            android:id="@+id/ALI_latitude"
+            style="@style/Title3TextStyleRed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="00.0000000" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/ALI_issueName"
+        android:layout_below="@+id/linearLayout2"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <TextView
+            android:id="@+id/ALI_coordinates"
+            style="@style/Title3TextStyleGray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="Latitude" />
+
+        <TextView
+            android:id="@+id/ALI_longitude"
+            style="@style/Title3TextStyleRed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="00.0000000" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/ALI_date"
+        style="@style/TextStyleGreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/ALI_issueName"
+        android:layout_toEndOf="@+id/ALI_logo"
+        android:gravity="right"
+        android:paddingRight="8dp"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

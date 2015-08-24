@@ -14,10 +14,18 @@ public class StatusreportedissueDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer statusReportedIssueID, reportedIssueID, statusID;
-    private String statusReportedDate,statusName;
+    private Integer statusReportedIssueID, reportedIssueID, statusID, flagDone;
+    private String statusReportedDate, statusName;
     private ReportedissueDTO reportedIssue;
     private StatusDTO status;
+
+    public Integer getFlagDone() {
+        return flagDone;
+    }
+
+    public void setFlagDone(Integer flagDone) {
+        this.flagDone = flagDone;
+    }
 
     public String getStatusName() {
         return statusName;

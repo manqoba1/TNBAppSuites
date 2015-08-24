@@ -2,8 +2,11 @@ package com.example.sifiso.tnbappsuites;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sifiso.tnblibrary.models.CommunitymemberDTO;
+import com.example.sifiso.tnblibrary.toolbox.WebCheck;
+import com.example.sifiso.tnblibrary.toolbox.WebCheckResult;
 import com.example.sifiso.tnblibrary.util.DataUtil;
+import com.example.sifiso.tnblibrary.util.EmailValidator;
 import com.example.sifiso.tnblibrary.util.SharedUtil;
 import com.example.sifiso.tnblibrary.util.Util;
 
@@ -38,12 +44,15 @@ public class LoginActivity extends ActionBarActivity {
     private Context ctx;
     String email;
     private CommunitymemberDTO communityMember;
+    EmailValidator validator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ctx = getApplicationContext();
+        validator = new EmailValidator();
+
         try {
             Util.setCustomActionBar(ctx, getSupportActionBar(), "Login Screen", ctx.getResources().getDrawable(R.mipmap.ic_launcher));
         } catch (Exception e) {
@@ -68,14 +77,24 @@ public class LoginActivity extends ActionBarActivity {
                     Util.showToast(ctx, "Password can't be empty");
                     return;
                 }
-                login();
+                if (validator.validate(AL_email.getText().toString())) {
+                    Util.showToast(ctx, "Invalid email format");
+                    return;
+                }
+                WebCheckResult w = WebCheck.checkNetworkAvailability(ctx);
+                if (w.isWifiConnected() || w.isMobileConnected()) {
+                    login();
+                } else {
+                    showSettingDialog();
+                }
             }
         });
         AL_btnForgot = (Button) findViewById(R.id.AL_btnForgot);
         AL_btnForgot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);
             }
         });
         AL_register = (TextView) findViewById(R.id.AL_register);
@@ -91,6 +110,27 @@ public class LoginActivity extends ActionBarActivity {
         if (SharedUtil.getEmail(ctx) != null) {
             AL_email.setText(SharedUtil.getEmail(ctx));
         }
+    }
+
+    public void showSettingDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+
+        builder.setTitle("No connectivity");
+        builder.setMessage("You network connectivity might be off, if not so please contact you your network provider");
+        builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                startActivity(intent);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
     private void checkVirgin() {
@@ -169,7 +209,7 @@ public class LoginActivity extends ActionBarActivity {
         Account[] accts = am.getAccounts();
         if (accts.length == 0) {
             Toast.makeText(ctx, "No Accounts found. Please create one and try again", Toast.LENGTH_LONG).show();
-            finish();
+            //finish();
             return;
         }
 
@@ -194,6 +234,18 @@ public class LoginActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        //  TimerUtil.killFlashTimer();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        super.onPause();
+    }
 
     static final String LOG = LoginActivity.class.getSimpleName();
 

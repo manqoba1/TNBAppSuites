@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.example.sifiso.tnblibrary.models.ClerkDTO;
 import com.example.sifiso.tnblibrary.models.CommunitymemberDTO;
 import com.example.sifiso.tnblibrary.models.IssueimageDTO;
 import com.example.sifiso.tnblibrary.models.IssuesDTO;
@@ -13,6 +14,7 @@ import com.example.sifiso.tnblibrary.models.MunicipalityDTO;
 import com.example.sifiso.tnblibrary.models.ReportedissueDTO;
 import com.example.sifiso.tnblibrary.models.RequestDTO;
 import com.example.sifiso.tnblibrary.models.ResponseDTO;
+import com.example.sifiso.tnblibrary.models.StatusDTO;
 import com.example.sifiso.tnblibrary.models.StatusreportedissueDTO;
 import com.example.sifiso.tnblibrary.models.TownDTO;
 import com.example.sifiso.tnblibrary.models.WardsDTO;
@@ -52,8 +54,42 @@ public class DataUtil {
                 @Override
                 public void onResponseReceived(JSONObject response) {
                     try {
-                        if (response.getInt("success") < 0) {
-                            Toast.makeText(ctx, response.getString("message"), Toast.LENGTH_LONG).show();
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
+                            dataUtilInterface.onError(response.getString("message"));
+                            return;
+                        }
+                        dataUtilInterface.onResponse(response);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onVolleyError(VolleyError error) {
+                    dataUtilInterface.onError(error.toString());
+                }
+            });
+        } catch (Exception e) {
+            dataUtilInterface.onError(e.toString());
+        }
+    }
+
+    public static void loginClerk(final Context ctx, String email, String pin, final DataUtilInterface listener) {
+
+        dataUtilInterface = listener;
+        RequestDTO req = new RequestDTO();
+        req.setEmail(email);
+        req.setPassword(pin);
+
+
+        try {
+            BaseVolley.getRemoteData(Constant.LOGIN_CLERK, req, ctx, new BaseVolley.BohaVolleyListener() {
+                @Override
+                public void onResponseReceived(JSONObject response) {
+                    try {
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
                             dataUtilInterface.onError(response.getString("message"));
                             return;
                         }
@@ -84,8 +120,8 @@ public class DataUtil {
                 @Override
                 public void onResponseReceived(JSONObject response) {
                     try {
-                        if (response.getInt("success") < 0) {
-                            Toast.makeText(ctx, response.getString("message"), Toast.LENGTH_LONG).show();
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
                             dataUtilInterface.onError(response.getString("message"));
                             return;
                         }
@@ -116,8 +152,8 @@ public class DataUtil {
                 @Override
                 public void onResponseReceived(JSONObject response) {
                     try {
-                        if (response.getInt("success") < 0) {
-                            Toast.makeText(ctx, response.getString("message"), Toast.LENGTH_LONG).show();
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
                             dataUtilInterface.onError(response.getString("message"));
                             return;
                         }
@@ -136,7 +172,38 @@ public class DataUtil {
             dataUtilInterface.onError(e.toString());
         }
     }
+    public static void loadClerkData(final Context ctx, int municipalityID,int clerkID, final DataUtilInterface listener) {
 
+        dataUtilInterface = listener;
+        RequestDTO req = new RequestDTO();
+        req.setMunicipalityID(municipalityID);
+        req.setClerkID(clerkID);
+
+        try {
+            BaseVolley.getRemoteData(Constant.LOAD_CLERK_DATA, req, ctx, new BaseVolley.BohaVolleyListener() {
+                @Override
+                public void onResponseReceived(JSONObject response) {
+                    try {
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
+                            dataUtilInterface.onError(response.getString("message"));
+                            return;
+                        }
+                        dataUtilInterface.onResponse(response);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onVolleyError(VolleyError error) {
+                    dataUtilInterface.onError(error.toString());
+                }
+            });
+        } catch (Exception e) {
+            dataUtilInterface.onError(e.toString());
+        }
+    }
     public static void loadRegisterData(final Context ctx, int municipalityID, final DataUtilInterface listener) {
 
         dataUtilInterface = listener;
@@ -148,11 +215,12 @@ public class DataUtil {
                 @Override
                 public void onResponseReceived(JSONObject response) {
                     try {
-                        if (response.getInt("success") < 0) {
-                            Toast.makeText(ctx, response.getString("message"), Toast.LENGTH_LONG).show();
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
                             dataUtilInterface.onError(response.getString("message"));
                             return;
                         }
+                        Log.i(LOG+"or not null", new Gson().toJson(response));
                         dataUtilInterface.onResponse(response);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -173,15 +241,15 @@ public class DataUtil {
 
         dataUtilInterface = listener;
         RequestDTO req = new RequestDTO();
-        req.setCommunitymember(patient);
+        req.setCommunityMember(patient);
         Log.d(LOG, new Gson().toJson(req));
         try {
             BaseVolley.getRemoteData(Constant.REGISTER_MEMBER, req, ctx, new BaseVolley.BohaVolleyListener() {
                 @Override
                 public void onResponseReceived(JSONObject response) {
                     try {
-                        if (response.getInt("success") < 0) {
-                            Toast.makeText(ctx, response.getString("message"), Toast.LENGTH_LONG).show();
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
                             dataUtilInterface.onError(response.getString("message"));
                             return;
                         }
@@ -212,8 +280,8 @@ public class DataUtil {
                 @Override
                 public void onResponseReceived(JSONObject response) {
                     try {
-                        if (response.getInt("success") < 0) {
-                            Toast.makeText(ctx, response.getString("message"), Toast.LENGTH_LONG).show();
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
                             dataUtilInterface.onError(response.getString("message"));
                             return;
                         }
@@ -243,8 +311,8 @@ public class DataUtil {
                 @Override
                 public void onResponseReceived(JSONObject response) {
                     try {
-                        if (response.getInt("success") < 0) {
-                            Toast.makeText(ctx, response.getString("message"), Toast.LENGTH_LONG).show();
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
                             dataUtilInterface.onError(response.getString("message"));
                             return;
                         }
@@ -263,7 +331,37 @@ public class DataUtil {
             dataUtilInterface.onError(e.toString());
         }
     }
+    public static void updateStatus(final Context ctx, StatusreportedissueDTO issueimage, final DataUtilInterface listener) {
 
+        dataUtilInterface = listener;
+        RequestDTO req = new RequestDTO();
+        req.setStatusreportedissue(issueimage);
+
+        try {
+            BaseVolley.getRemoteData(Constant.UPDATE_STATUS, req, ctx, new BaseVolley.BohaVolleyListener() {
+                @Override
+                public void onResponseReceived(JSONObject response) {
+                    try {
+                        if (response.getInt("success") <= 0) {
+                            Util.showErrorToast(ctx, response.getString("message"));
+                            dataUtilInterface.onError(response.getString("message"));
+                            return;
+                        }
+                        dataUtilInterface.onResponse(response);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onVolleyError(VolleyError error) {
+                    dataUtilInterface.onError(error.toString());
+                }
+            });
+        } catch (Exception e) {
+            dataUtilInterface.onError(e.toString());
+        }
+    }
     public static CommunitymemberDTO communityMember(JSONArray ar) throws JSONException {
         CommunitymemberDTO dto = new CommunitymemberDTO();
         JSONObject o = ar.getJSONObject(0);
@@ -275,7 +373,17 @@ public class DataUtil {
 
         return dto;
     }
+    public static ClerkDTO clerk(JSONArray ar) throws JSONException {
+        ClerkDTO dto = new ClerkDTO();
+        JSONObject o = ar.getJSONObject(0);
+        dto.setClerkID(o.getInt("clerkID"));
+        dto.setName(o.getString("name"));
+        dto.setSurname(o.getString("surname"));
+        dto.setEmail(o.getString("email"));
+        dto.setMunicipalityID(o.getInt("municipalityID"));
 
+        return dto;
+    }
   /* public static List<ClinicDTO> clinicList(JSONArray ar) throws JSONException {
         List<ClinicDTO> list = new ArrayList<>();
         for (int i = 0; i < ar.length(); i++) {
@@ -359,6 +467,7 @@ public class DataUtil {
                 dto.setReportedIssueID(ob.getInt("statusReportedIssueID"));
                 dto.setStatusReportedDate(ob.getString("statusReportedDate"));
                 dto.setStatusName(ob.getString("statusName"));
+                dto.setFlagDone(ob.getInt("flagDone"));
 
                 list.add(dto);
             }
@@ -379,7 +488,18 @@ public class DataUtil {
             }
             return list;
         }
+        private List<StatusDTO> statusList(JSONArray ar) throws JSONException {
+            List<StatusDTO> list = new ArrayList<>();
+            for (int i = 0; i < ar.length(); i++) {
+                JSONObject ob = ar.getJSONObject(i);
+                StatusDTO dto = new StatusDTO();
+                dto.setStatusID(ob.getInt("statusID"));
+                dto.setStatusName(ob.getString("statusName"));
 
+                list.add(dto);
+            }
+            return list;
+        }
         @Override
         protected ResponseDTO doInBackground(JSONObject... params) {
             JSONObject dto = params[0];
@@ -388,6 +508,7 @@ public class DataUtil {
 
                 response.setReportedIssueList(reportedIssueList(dto.getJSONArray("reportedIssue")));
                 response.setIssuesList(issuesList(dto.getJSONArray("issues")));
+//                response.setStatusList(statusList(dto.getJSONArray("status")));
                 response.setSuccess(dto.getInt("success"));
                 response.setMessage(dto.getString("message"));
             } catch (JSONException e) {
@@ -431,7 +552,7 @@ public class DataUtil {
                 dto.setAddress(ob.getString("address"));
                 dto.setEmail(ob.getString("email"));
                 dto.setTownList(townList(ob.getJSONArray("town")));
-                dto.setWardsList(wardList(ob.getJSONArray("ward")));
+                dto.setWardsList(wardList(ob.getJSONArray("wards")));
                 list.add(dto);
             }
 
@@ -472,7 +593,7 @@ public class DataUtil {
             ResponseDTO response = new ResponseDTO();
             try {
 
-                response.setMunicipalityList(municipalityList(dto.getJSONArray("reportedIssue")));
+                response.setMunicipalityList(municipalityList(dto.getJSONArray("municipality")));
                 response.setSuccess(dto.getInt("success"));
                 response.setMessage(dto.getString("message"));
             } catch (JSONException e) {

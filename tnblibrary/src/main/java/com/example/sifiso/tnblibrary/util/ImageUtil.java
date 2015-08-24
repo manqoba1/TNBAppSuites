@@ -32,7 +32,7 @@ public class ImageUtil {
         try {
             File rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             if (rootDir == null) {
-                rootDir = Environment.getRootDirectory();
+                rootDir = Environment.getDataDirectory();
             }
             File imgDir = new File(rootDir, "tnb_app");
             if (!imgDir.exists()) {

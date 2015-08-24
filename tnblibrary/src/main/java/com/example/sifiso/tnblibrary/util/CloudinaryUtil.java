@@ -40,39 +40,52 @@ public class CloudinaryUtil {
         mListner = listner;
         mFile = fileName;
         mCtx = ctx;
-        new uploadToCDN().execute();
+        new UploadToCDN().execute();
     }
 
-    private static class uploadToCDN extends AsyncTask<Void, Void, Map> {
+    private static class UploadToCDN extends AsyncTask<Void, Integer, Map> {
 
         @Override
-        protected void onProgressUpdate(Void... values) {
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            mListner.onProgress(values.length);
+            Log.d(LOG, values.length+" vfdfsdfsf");
+            mListner.onProgress(values[0]);
         }
 
         @Override
         protected Map doInBackground(Void... params) {
             Cloudinary cloudinary = cloudinaryConnection(mCtx);
+
             Map uploadResult = null;
-            try {
-                Map options = ObjectUtils.asMap(
-                        "colors", true,
-                        "metadata", true
-                );
-                uploadResult = cloudinary.uploader().upload(mFile, options);
-                return uploadResult;
-            } catch (IOException e) {
-                mListner.onError();
-                Log.e(LOG, "{0}", e);
-                return uploadResult;
+            if (cloudinary != null) {
+                try {
+                    Map options = ObjectUtils.asMap(
+                            "colors", true,
+                            "metadata", true
+                    );
+                    uploadResult = cloudinary.uploader().upload(mFile, options);
+                    return uploadResult;
+                } catch (IOException e) {
+                    mListner.onError();
+                    Log.e(LOG, "{0}", e);
+                    //return uploadResult;
+                }
             }
-            // return uploadResult;
+            return null;
         }
 
         @Override
         protected void onPostExecute(Map uploadResult) {
             super.onPostExecute(uploadResult);
+            if (uploadResult == null) {
+                new UploadToCDN().execute();
+                return;
+            }
             mListner.onSuccessUpload(uploadResult);
         }
     }

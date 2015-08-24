@@ -7,10 +7,27 @@ import java.io.Serializable;
  */
 public class RequestDTO implements Serializable {
     private String email, password;
-    private Integer communityMemberID, municipalityID;
-    private CommunitymemberDTO communitymember;
+    private Integer communityMemberID, municipalityID, clerkID;
+    private CommunitymemberDTO communityMember;
     private ReportedissueDTO reportedissue;
     private IssueimageDTO issueimage;
+    private StatusreportedissueDTO statusreportedissue;
+
+    public StatusreportedissueDTO getStatusreportedissue() {
+        return statusreportedissue;
+    }
+
+    public void setStatusreportedissue(StatusreportedissueDTO statusreportedissue) {
+        this.statusreportedissue = statusreportedissue;
+    }
+
+    public Integer getClerkID() {
+        return clerkID;
+    }
+
+    public void setClerkID(Integer clerkID) {
+        this.clerkID = clerkID;
+    }
 
     public Integer getMunicipalityID() {
         return municipalityID;
@@ -44,12 +61,12 @@ public class RequestDTO implements Serializable {
         this.reportedissue = reportedissue;
     }
 
-    public CommunitymemberDTO getCommunitymember() {
-        return communitymember;
+    public CommunitymemberDTO getCommunityMember() {
+        return communityMember;
     }
 
-    public void setCommunitymember(CommunitymemberDTO communitymember) {
-        this.communitymember = communitymember;
+    public void setCommunityMember(CommunitymemberDTO communityMember) {
+        this.communityMember = communityMember;
     }
 
     public String getEmail() {

@@ -45,8 +45,8 @@ public class IssueDashboardAdapter extends RecyclerView.Adapter<IssueDashboardAd
 
         int rID = mContext.getResources().getIdentifier(issues.getIcon(), "drawable", mContext.getPackageName());
 
-        h.INSC_image.setImageResource(rID);
 
+        h.INSC_image.setImageResource(rID);
         h.IIC_text.setText(issues.getName());
 
         h.INSC_image.setOnClickListener(new View.OnClickListener() {

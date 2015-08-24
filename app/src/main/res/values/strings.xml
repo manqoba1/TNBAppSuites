@@ -3,8 +3,11 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Log out</string>
-    <string name="title_activity_login">Login Screen</string>
-    <string name="title_activity_registration">RegistrationActivity</string>
-    <string name="title_activity_forgot_password">ForgotPasswordActivity</string>
-    <string name="title_activity_log_issue">LogIssueActivity</string>
+    <string name="action_map">Map</string>
+    <string name="title_activity_login">The Notice Board</string>
+    <string name="title_activity_registration">Registration</string>
+    <string name="title_activity_forgot_password">Forgot Password</string>
+    <string name="title_activity_log_issue">Log Issue</string>
+    <string name="title_activity_full_view_issue">Full Detail View</string>
+    <string name="title_activity_tnbmaps">Map</string>
 </resources>

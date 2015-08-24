@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.widget.TextView;
 
+import java.util.regex.Pattern;
+
 
 public class Statics {
 
@@ -61,6 +63,24 @@ public class Statics {
         Typeface font = Typeface.createFromAsset(ctx.getAssets(),
                 "fonts/Roboto-Regular.ttf");
         txt.setTypeface(font);
+    }
+    public static final Pattern rfc2822 = Pattern.compile(
+            "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"
+    );
+    public static boolean isAlpha(String name) {
+        return name.matches("[a-zA-Z]+");
+    }
+    public static boolean isSpecial(String name) {
+        return name.matches("[!#$%&'*+/=?^_`{|}~-]+");
+    }
+
+    public static boolean isLetterAndNumber(String l) {
+        String n = ".*[0-9].*";
+        String a = ".*[A-Z].*";
+        String s = ".*[0-9!#$%&'*+/=?^_`{|}~-].*";
+
+        return l.matches(s) ;
+
     }
 
 }

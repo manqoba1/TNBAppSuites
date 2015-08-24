@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
+    android:padding="4dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:id="@+id/MC_seekLayout"
+        android:layout_marginTop="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/MC_top"
+        android:layout_below="@id/MC_seekLayout"
+        android:background="@color/beige_pale"
+        android:padding="@dimen/mon_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/MC_label1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reported Issue: "
+            android:layout_centerVertical="true"
+            android:textColor="@color/blue"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/MC_issues"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/MC_label1"
+            android:text="0"
+            android:layout_marginLeft="@dimen/mon_padding"
+            android:textColor="@color/blue"
+            android:layout_centerVertical="true"
+            android:textSize="20sp"
+            android:textStyle="normal" />
+
+        <ProgressBar
+            android:id="@+id/MC_progress"
+            style="@android:style/Widget.ProgressBar.Small.Inverse"
+            android:layout_marginRight="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/MC_label1"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@id/MC_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/MC_maptype"
+            android:src="@android:drawable/ic_menu_rotate"
+            android:tint="@color/teal"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/mon_padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
